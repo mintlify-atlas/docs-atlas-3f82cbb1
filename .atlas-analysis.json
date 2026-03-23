@@ -1,0 +1,72 @@
+{
+  "projectType": "saas",
+  "projectName": "CodesEverywhere",
+  "projectDescription": "A full-stack code snippet sharing platform where users can upload, browse, and manage public or private code snippets with built-in authentication.",
+  "theme": "palm",
+  "primaryColor": "#3B82F6",
+  "lightColor": "#EFF6FF",
+  "darkColor": "#1E3A5F",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": ["introduction", "quickstart"]
+          },
+          {
+            "group": "Core Features",
+            "pages": [
+              "features/browsing-snippets",
+              "features/sharing-code",
+              "features/user-posts"
+            ]
+          },
+          {
+            "group": "Setup & Deployment",
+            "pages": [
+              "setup/backend",
+              "setup/frontend",
+              "setup/database"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Endpoints",
+            "pages": [
+              "api/overview",
+              "api/get-codes",
+              "api/upload-code",
+              "api/user-posts"
+            ]
+          },
+          {
+            "group": "Data Models",
+            "pages": [
+              "api/models"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Browse randomly ordered public code snippets on the dashboard",
+    "Share code snippets with title, type, description, and visibility control",
+    "Authenticate users with a combined login/signup flow",
+    "View all posts belonging to a specific authenticated user",
+    "Infinite scroll with IntersectionObserver for seamless browsing",
+    "Spring Boot REST API backend with MySQL persistence",
+    "React + TypeScript + TailwindCSS frontend"
+  ],
+  "publicApiSurface": [
+    "GET /api/ — Retrieve a random list of public code snippets",
+    "POST /api/upload — Upload a new code snippet (requires authentication)",
+    "POST /api/user-posts — Retrieve all snippets for an authenticated user"
+  ]
+}
