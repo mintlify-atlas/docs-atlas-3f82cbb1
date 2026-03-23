@@ -108,7 +108,7 @@ mvn spring-boot:run
 The backend starts on port **8080**. You should see output similar to:
 
 ```
-Started CodesEverywhereApplication in 3.4 seconds
+Started CodeseverywhereApplication in 3.4 seconds
 ```
 
 Verify the API is running:
@@ -161,7 +161,7 @@ yarn dev
 
 </CodeGroup>
 
-Vite will print a local URL — typically `http://localhost:5173`. The frontend is configured to proxy API requests to `http://localhost:8080/api`.
+Vite will print a local URL — typically `http://localhost:5173`. The frontend makes API requests directly to `http://localhost:8080/api` (hardcoded in the component files), so the backend must be running before you open the app.
 
 <Note>
   Both servers must be running simultaneously: the Spring Boot backend on port 8080 and the Vite dev server on port 5173.
@@ -177,7 +177,7 @@ You will land on the **Dashboard** — a scrollable feed of public snippets from
 
 To share your first snippet:
 
-1. Click the **Share** or upload button to open the **CodeForm**.
+1. Click **Share Code** in the navigation bar to open the code submission form.
 2. Fill in the fields:
    - **Username** — your chosen username (a new account is created automatically on first use)
    - **Password** — a password for your account
@@ -186,7 +186,7 @@ To share your first snippet:
    - **Code** — paste your code
    - **Description** — a brief explanation of what the code does
    - **Visibility** — set to **Public** to appear in the community feed, or **Private** to keep it to yourself
-3. Click **Submit** to upload the snippet.
+3. Click **Share Code** to upload the snippet.
 
 <Check>
   Your snippet is now stored in MySQL and visible on the dashboard (if set to public). You can view all your own snippets under **Your Posts**, after authenticating with the same username and password.
@@ -208,7 +208,7 @@ Once both servers are up, here is a summary of your local environment:
 
 ## Next steps
 
-<Columns cols={2}>
+<CardGroup cols={2}>
   <Card title="Browse snippets" icon="grid" href="/features/browsing-snippets">
     Learn how the infinite-scroll public feed works
   </Card>
@@ -221,4 +221,4 @@ Once both servers are up, here is a summary of your local environment:
   <Card title="API reference" icon="code" href="/api/overview">
     Explore the REST endpoints directly
   </Card>
-</Columns>
+</CardGroup>

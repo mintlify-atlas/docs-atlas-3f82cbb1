@@ -89,7 +89,7 @@ Before you begin, make sure you have the following installed:
     Verify it is running:
 
     ```bash
-    curl http://localhost:8080/api/codes
+    curl http://localhost:8080/api/
     ```
   </Step>
 </Steps>
@@ -102,7 +102,7 @@ The REST controller uses Spring's `@CrossOrigin` annotation with no restrictions
 @CrossOrigin
 @RestController
 @RequestMapping("/api")
-public class CodesController { ... }
+public class UpdateCodes { ... }
 ```
 
 This is fine for local development. For production, replace the bare `@CrossOrigin` annotation with an explicit origin list:
