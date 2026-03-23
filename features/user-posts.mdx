@@ -1,0 +1,56 @@
+---
+title: "User posts"
+description: "View all of your own snippets — public and private — by authenticating on the User Posts page."
+keywords: ["user posts", "my snippets", "private", "authentication", "contributions"]
+---
+
+The **User Posts** page gives you a complete view of every snippet you have shared on CodesEverywhere, including those set to private visibility that do not appear in the public dashboard feed.
+
+## Navigating to your posts
+
+Click **User Posts** in the navigation bar. This takes you to `/user-posts`.
+
+## Authenticating
+
+Access to the User Posts page requires authentication. Your snippets are only returned after your credentials are verified.
+
+<Steps>
+  <Step title="Enter your username/email">
+    Type the same username or email address you used when submitting your snippets.
+  </Step>
+  <Step title="Enter your password">
+    Type the password associated with your account.
+  </Step>
+  <Step title="Submit">
+    Click the button to authenticate. The page sends your credentials to the backend, which verifies them and returns all snippets belonging to your account.
+  </Step>
+</Steps>
+
+<Warning>
+  If your password is incorrect, the page displays an error and no snippets are shown. Double-check the credentials you used when you first shared a snippet. There is currently no password reset feature.
+</Warning>
+
+## What is displayed
+
+After successful authentication, the page shows **all snippets associated with your account** — both public and private — as snippet cards. Each card shows the same fields as the public dashboard:
+
+- Author (your username)
+- Upload timestamp (DD-MM-YYYY HH:MM)
+- Title
+- Type badge
+- Description
+- Code block
+
+<Note>
+  Private snippets are included here but will never appear in the public dashboard feed visible to other users. The User Posts page is the only place where you can see all your contributions in one view.
+</Note>
+
+## Using the posts page to review your contributions
+
+- **Audit your visibility settings** — compare which snippets are public versus private by reviewing your full list here before checking the dashboard feed.
+- **Verify a successful upload** — if you just submitted a snippet and want to confirm it was saved correctly, authenticate here to see it appear immediately regardless of its visibility setting.
+- **Track your history** — all snippets you have ever shared are stored and returned here, giving you a complete record of your contributions to the platform.
+
+<Tip>
+  To share a new snippet or adjust what you post, use the [Share Code](/features/sharing-code) page.
+</Tip>

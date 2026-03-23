@@ -1,0 +1,86 @@
+---
+title: "Sharing code"
+description: "Upload a code snippet to CodesEverywhere — including title, language, visibility, and description — using the Share Code form."
+keywords: ["share", "upload", "snippet", "form", "visibility", "authentication"]
+---
+
+The **Share Code** page lets you publish a code snippet to CodesEverywhere. Each submission is tied to your account and can be set to public or private visibility.
+
+## Workflow
+
+<Steps>
+  <Step title="Navigate to Share Code">
+    Click **Share Code** in the navigation bar. This takes you to `/share-code` where the submission form is displayed.
+  </Step>
+  <Step title="Enter your credentials">
+    Fill in your **Username/Email** and **Password**.
+
+    CodesEverywhere uses a combined login and registration flow:
+
+    - **New user** — if no account exists with that username/email, one is created automatically. Your first submission doubles as registration.
+    - **Returning user** — if an account already exists, your password is verified. An incorrect password returns an error and the snippet is not saved.
+
+    <Warning>
+      There is no separate sign-up page. Your account is created the first time you submit a snippet. Make sure you remember the password you use, because there is currently no password reset flow.
+    </Warning>
+  </Step>
+  <Step title="Fill in the snippet details">
+    Complete the remaining fields in the form:
+
+    | Field | Type | Description |
+    |---|---|---|
+    | **Title** | Text | A short, descriptive name for your snippet |
+    | **Type** | Text | A language or category label (e.g., `JavaScript`, `SQL`, `Dockerfile`) |
+    | **Visibility** | Select | `public` — appears in the dashboard feed; `private` — only visible to you |
+    | **Code** | Textarea | The full code content you want to share |
+    | **Description** | Textarea | An explanation of what the snippet does or how to use it |
+  </Step>
+  <Step title="Submit the form">
+    Click the submit button. The form posts your snippet to the backend API.
+
+    - **On success** — a `Code Shared Successfully!` toast notification appears and the form resets to its empty state, ready for another submission.
+    - **On failure** — an error toast appears with a message describing what went wrong (e.g., wrong password, server error).
+  </Step>
+</Steps>
+
+## Form fields reference
+
+<AccordionGroup>
+  <Accordion title="Username / Email">
+    Used to identify your account. Accepts a plain username or an email address. This value is stored with the snippet and displayed on each card in the public feed.
+  </Accordion>
+  <Accordion title="Password">
+    Used to authenticate or create your account. Stored securely on the backend. There is no confirmation field — type carefully.
+  </Accordion>
+  <Accordion title="Title">
+    A human-readable name for the snippet. Displayed prominently on the snippet card. Keep it concise but descriptive.
+  </Accordion>
+  <Accordion title="Type">
+    A free-text label for the programming language, framework, or category. This value is rendered as a badge on the snippet card. Examples: `Python`, `Bash`, `React`, `SQL`, `YAML`.
+  </Accordion>
+  <Accordion title="Visibility">
+    Controls who can see the snippet:
+
+    - **Public** — the snippet appears in the dashboard feed and is visible to everyone.
+    - **Private** — the snippet is excluded from the public feed and only appears on your own [User Posts](/features/user-posts) page after authentication.
+  </Accordion>
+  <Accordion title="Code">
+    The raw code content. Paste or type your snippet here. It is rendered verbatim inside a `pre/code` block on the snippet card.
+  </Accordion>
+  <Accordion title="Description">
+    An optional explanation of the snippet. Use this to describe what the code does, any dependencies it requires, or example usage. Displayed below the type badge on the card.
+  </Accordion>
+</AccordionGroup>
+
+## Visibility and the public feed
+
+Visibility is the key setting that controls how your snippet is surfaced to others:
+
+```
+public  → appears in the dashboard feed → discoverable by anyone
+private → excluded from the dashboard   → only visible to you via User Posts
+```
+
+<Note>
+  You can review all your snippets — both public and private — by visiting the [User Posts](/features/user-posts) page.
+</Note>

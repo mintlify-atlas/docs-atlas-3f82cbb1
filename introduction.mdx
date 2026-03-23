@@ -1,0 +1,54 @@
+---
+title: "Introduction"
+description: "CodesEverywhere is a full-stack code snippet sharing platform where developers can upload, browse, and manage code snippets with built-in authentication."
+---
+
+## What is CodesEverywhere?
+
+CodesEverywhere is an open-source code snippet sharing platform that lets developers share their code with the world — or keep it private. Built with a Spring Boot backend and React frontend, it provides a simple, fast way to store and discover code snippets across any programming language.
+
+<CardGroup cols={2}>
+  <Card title="Browse Snippets" icon="grid" href="/features/browsing-snippets">
+    Explore a feed of publicly shared code snippets from the community
+  </Card>
+  <Card title="Share Code" icon="upload" href="/features/sharing-code">
+    Upload your own snippets with title, type, description, and visibility control
+  </Card>
+  <Card title="Your Posts" icon="user" href="/features/user-posts">
+    View and manage all code snippets you've shared on the platform
+  </Card>
+  <Card title="API Reference" icon="code" href="/api/overview">
+    Explore the REST API to integrate CodesEverywhere into your tools
+  </Card>
+</CardGroup>
+
+## Key features
+
+- **Public feed** — Browse randomly ordered public snippets from the community dashboard
+- **Code sharing** — Upload snippets with a title, language/type label, description, and public or private visibility
+- **Authentication** — A combined login and signup flow: new accounts are created automatically on first use
+- **User posts** — Authenticate to view all your own snippets in one place
+- **Infinite scroll** — The dashboard loads more snippets automatically as you scroll
+- **REST API** — A clean Spring Boot API with three endpoints covering all core functionality
+
+## Tech stack
+
+<CardGroup cols={2}>
+  <Card title="Backend" icon="server">
+    **Spring Boot 3.4** (Java 17) with Spring Data JPA, connected to **MySQL** for persistence
+  </Card>
+  <Card title="Frontend" icon="browser">
+    **React 18** with TypeScript, Vite, and TailwindCSS for a responsive developer-friendly UI
+  </Card>
+</CardGroup>
+
+## Getting started
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Get CodesEverywhere running locally in under 10 minutes
+  </Card>
+  <Card title="Setup guide" icon="wrench" href="/setup/backend">
+    Step-by-step instructions for backend, frontend, and database setup
+  </Card>
+</CardGroup>

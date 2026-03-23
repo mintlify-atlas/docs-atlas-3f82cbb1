@@ -1,0 +1,124 @@
+---
+title: 'Upload a snippet'
+description: 'Upload a new code snippet. Authentication is required via credentials in the request body.'
+keywords: ['post', 'upload', 'snippet', 'create', 'authentication']
+api: 'POST http://localhost:8080/api/upload'
+---
+
+Saves a new code snippet to the database. Authentication credentials must be included in the request body. If the username does not yet exist, an account is created automatically.
+
+## Request body
+
+The request body must be a `DetailedCode` object containing both the snippet data and login credentials.
+
+<ParamField body="codes" type="object" required>
+  The code snippet to save.
+
+  <Expandable title="codes properties">
+    <ParamField body="codes.username" type="string">
+      Owner's username. If omitted, this is set automatically from `login.username`.
+    </ParamField>
+    <ParamField body="codes.code" type="string" required>
+      The actual code content.
+    </ParamField>
+    <ParamField body="codes.type" type="string" required>
+      Language or type label (e.g., `"JavaScript"`, `"Python"`).
+    </ParamField>
+    <ParamField body="codes.title" type="string" required>
+      Snippet title.
+    </ParamField>
+    <ParamField body="codes.description" type="string" required>
+      Description of the snippet.
+    </ParamField>
+    <ParamField body="codes.visibility" type="boolean" required>
+      `true` to make the snippet public, `false` to keep it private.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="login" type="object" required>
+  Authentication credentials.
+
+  <Expandable title="login properties">
+    <ParamField body="login.username" type="string" required>
+      Your username or email. If this account does not exist yet, it will be created automatically.
+    </ParamField>
+    <ParamField body="login.password" type="string" required>
+      Your password.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<Note>
+If `codes.username` is not provided, the backend automatically sets it to the value of `login.username`.
+</Note>
+
+## Response
+
+### 201 Created — success
+
+<ResponseField name="okk" type="boolean">
+  `true` when the snippet was saved successfully.
+</ResponseField>
+
+### 401 Unauthorized — authentication failed
+
+<ResponseField name="okk" type="boolean">
+  `false` when the credentials were incorrect for an existing account.
+</ResponseField>
+
+<Warning>
+A `401` response means an account with that username exists but the password did not match. Supplying a new username always succeeds and creates a new account.
+</Warning>
+
+## Examples
+
+### Upload a public snippet
+
+```bash
+curl -X POST http://localhost:8080/api/upload \
+  -H "Content-Type: application/json" \
+  -d '{
+    "codes": {
+      "code": "console.log(\"Hello, world!\");",
+      "type": "JavaScript",
+      "title": "Hello World",
+      "description": "Classic introductory snippet.",
+      "visibility": true
+    },
+    "login": {
+      "username": "alice",
+      "password": "hunter2"
+    }
+  }'
+```
+
+### Example request body
+
+```json
+{
+  "codes": {
+    "code": "console.log(\"Hello, world!\");",
+    "type": "JavaScript",
+    "title": "Hello World",
+    "description": "Classic introductory snippet.",
+    "visibility": true
+  },
+  "login": {
+    "username": "alice",
+    "password": "hunter2"
+  }
+}
+```
+
+### Success response (201)
+
+```json
+{ "okk": true }
+```
+
+### Auth failure response (401)
+
+```json
+{ "okk": false }
+```

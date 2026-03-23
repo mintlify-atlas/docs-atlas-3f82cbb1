@@ -1,0 +1,90 @@
+---
+title: 'API reference'
+description: 'Overview of the CodesEverywhere REST API, base URL, authentication, and available endpoints.'
+keywords: ['api', 'rest', 'endpoints', 'authentication', 'cors']
+---
+
+The CodesEverywhere API is a JSON REST API served by the Spring Boot backend. It lets you fetch public snippets, upload new snippets, and retrieve a user's full snippet history.
+
+## Base URL
+
+```
+http://localhost:8080/api
+```
+
+<Note>
+The server runs on port `8080` by default. If you deploy the backend elsewhere, replace the base URL accordingly.
+</Note>
+
+## Endpoints at a glance
+
+| Method | Path | Auth required | Description |
+|--------|------|---------------|-------------|
+| `GET` | `/api/` | No | Fetch random public snippets |
+| `POST` | `/api/upload` | Yes | Upload a new code snippet |
+| `POST` | `/api/user-posts` | Yes | Fetch all snippets for a user |
+
+## Authentication
+
+The API does not use API keys, tokens, or `Authorization` headers. Instead, credentials are passed directly in the JSON request body as `username` and `password` fields.
+
+**Login and sign-up are the same operation.** When you supply a username/password pair:
+
+- If the username does not exist yet, an account is created automatically and the request proceeds.
+- If the username already exists and the password matches, the request proceeds.
+- If the username exists but the password is wrong, the server returns `401 Unauthorized`.
+
+<Tip>
+You never need a separate sign-up step. Your first successful authenticated request creates your account.
+</Tip>
+
+<Warning>
+Passwords are compared as plain text by the current backend implementation. Do not reuse sensitive passwords.
+</Warning>
+
+## CORS
+
+The controller is annotated with `@CrossOrigin`, which allows requests from any origin. No preflight configuration is required on the client side.
+
+## Request and response format
+
+All request bodies must be JSON. Set the `Content-Type` header to `application/json` on every `POST` request.
+
+All successful responses return JSON. Error responses also return JSON where applicable.
+
+## Error responses
+
+| Status | Meaning |
+|--------|---------|
+| `200 OK` | Request succeeded. |
+| `201 Created` | Snippet was saved successfully. |
+| `401 Unauthorized` | Credentials were incorrect. |
+
+For `POST /api/upload`, the body on `401` is:
+
+```json
+{ "okk": false }
+```
+
+For `POST /api/user-posts`, the body on `401` is an empty array:
+
+```json
+[]
+```
+
+## Next steps
+
+<Columns cols={2}>
+  <Card title="GET /api/" icon="download" href="/api/get-codes">
+    Fetch random public snippets.
+  </Card>
+  <Card title="POST /api/upload" icon="upload" href="/api/upload-code">
+    Upload a new code snippet.
+  </Card>
+  <Card title="POST /api/user-posts" icon="user" href="/api/user-posts">
+    Retrieve all snippets for a user.
+  </Card>
+  <Card title="Data models" icon="database" href="/api/models">
+    Code, Login, and response objects.
+  </Card>
+</Columns>

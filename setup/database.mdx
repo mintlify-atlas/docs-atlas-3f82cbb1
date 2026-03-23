@@ -1,0 +1,197 @@
+---
+title: "Database setup"
+description: "Install MySQL and configure the database for CodesEverywhere."
+keywords: ["mysql", "database", "schema", "setup", "jpa"]
+---
+
+## Prerequisites
+
+- **MySQL 8** installed and running locally
+
+<Warning>
+  The default configuration uses `root`/`root` credentials. This is acceptable for local development only. For any shared or production environment, create a dedicated database user with a strong password and grant it privileges only on the `29db` database.
+</Warning>
+
+## Setup steps
+
+<Steps>
+  <Step title="Install MySQL 8">
+    <CodeGroup>
+      ```bash macOS (Homebrew)
+      brew install mysql
+      brew services start mysql
+      ```
+
+      ```bash Ubuntu / Debian
+      sudo apt update
+      sudo apt install mysql-server
+      sudo systemctl start mysql
+      ```
+
+      ```bash Windows
+      # Download and run the MySQL Installer from:
+      # https://dev.mysql.com/downloads/installer/
+      ```
+    </CodeGroup>
+
+    Verify the installation:
+
+    ```bash
+    mysql --version   # should show 8.x.x
+    ```
+  </Step>
+
+  <Step title="Create the database">
+    Connect to MySQL as root and create the database:
+
+    ```bash
+    mysql -u root -p
+    ```
+
+    ```sql
+    CREATE DATABASE 29db;
+    ```
+
+    Verify it was created:
+
+    ```sql
+    SHOW DATABASES;
+    ```
+
+    You should see `29db` in the list.
+  </Step>
+
+  <Step title="Start the backend to auto-create tables">
+    CodesEverywhere uses Hibernate's `ddl-auto=update` mode. When the Spring Boot backend starts for the first time, Hibernate reads the entity classes and automatically creates the required tables inside `29db`.
+
+    Start the backend (see [Backend setup](/setup/backend)), then confirm the tables exist:
+
+    ```bash
+    mysql -u root -p 29db
+    ```
+
+    ```sql
+    SHOW TABLES;
+    ```
+
+    Expected output:
+
+    ```
+    +------------------+
+    | Tables_in_29db   |
+    +------------------+
+    | codes            |
+    | login            |
+    +------------------+
+    ```
+  </Step>
+</Steps>
+
+## Schema reference
+
+Hibernate derives the schema from two JPA entity classes.
+
+### `codes` table
+
+Stores every code snippet uploaded to the platform.
+
+```sql
+DESCRIBE codes;
+```
+
+| Column | Type | Notes |
+|---|---|---|
+| `id` | `BIGINT` | Primary key, auto-increment |
+| `username` | `VARCHAR` | Owner of the snippet |
+| `code` | `LONGTEXT` / `VARCHAR` | The raw source code |
+| `type` | `VARCHAR` | Programming language or file type |
+| `title` | `VARCHAR` | Human-readable title |
+| `description` | `VARCHAR` | Short description |
+| `visibility` | `TINYINT(1)` | `1` = public, `0` = private |
+| `created_at` | `DATETIME` | Set to `LocalDateTime.now()` on creation |
+
+The corresponding Java entity:
+
+```java
+@Entity
+@Table(name = "codes")
+public class Codes {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String username;
+    private String code;
+    private String type;
+    private String title;
+    private String description;
+    private boolean visibility;
+    private LocalDateTime createdAt = LocalDateTime.now();
+}
+```
+
+### `login` table
+
+Stores user accounts.
+
+```sql
+DESCRIBE login;
+```
+
+| Column | Type | Notes |
+|---|---|---|
+| `id` | `INT` | Primary key, auto-increment |
+| `username` | `VARCHAR` | Unique display name |
+| `password` | `VARCHAR` | Password (stored as-is — see warning below) |
+| `email` | `VARCHAR` | Used for login alongside username |
+
+<Warning>
+  Passwords are stored without hashing in the current implementation. This is not safe for production use. Before going live, integrate a password hashing library such as BCrypt (already available in Spring Security) and hash passwords before persisting them.
+</Warning>
+
+## Repository queries
+
+The `UploadRepo` interface exposes two JPQL queries:
+
+```java
+// Returns a random sample of public snippets
+@Query("select u from Codes u where u.visibility = true order by RAND() limit :size")
+List<Codes> findRandomCodes(int size);
+
+// Returns all snippets uploaded by a specific user
+@Query("select u from Codes u where u.username = :username")
+List<Codes> findByUser(String username);
+```
+
+`RAND()` is a MySQL function that returns a random float. Ordering by it shuffles the result set, so each call to `findRandomCodes` returns a different selection of public snippets.
+
+The `LoginRepo` interface supports login by either username or email address:
+
+```java
+@Query("select u from Login u where u.email = :username or u.username = :username")
+Login findByEmailUsername(String username);
+```
+
+## Verifying data
+
+Useful queries to inspect the database contents during development:
+
+```sql
+-- Count all snippets
+SELECT COUNT(*) FROM codes;
+
+-- List public snippets
+SELECT id, username, title, type, created_at
+FROM codes
+WHERE visibility = 1
+ORDER BY created_at DESC
+LIMIT 10;
+
+-- List all registered users (never expose passwords in logs)
+SELECT id, username, email FROM login;
+
+-- Find all snippets by a specific user
+SELECT id, title, type, visibility FROM codes WHERE username = 'alice';
+```
+
+<Tip>
+  Enable `spring.jpa.show-sql=true` in `application.properties` (already set by default) to see every SQL statement Hibernate generates in the application logs. This makes it easy to understand exactly what queries are running.
+</Tip>

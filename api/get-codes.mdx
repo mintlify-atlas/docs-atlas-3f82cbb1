@@ -1,0 +1,94 @@
+---
+title: 'Get public snippets'
+description: 'Fetch a random selection of public code snippets. No authentication required.'
+keywords: ['get', 'snippets', 'public', 'random']
+api: 'GET http://localhost:8080/api/'
+---
+
+Returns a random selection of publicly visible code snippets. No authentication is required.
+
+## Query parameters
+
+<ParamField query="size" type="number" default="10">
+  Number of snippets to return. Results are randomly ordered on each request using MySQL `RAND()`.
+</ParamField>
+
+<Note>
+Only snippets where `visibility` is `true` are returned. Private snippets are never included in this response.
+</Note>
+
+## Response
+
+Returns an array of [Code objects](/api/models#code-object) on `200 OK`.
+
+<ResponseField name="[]" type="Code[]">
+  Array of public code snippets.
+
+  <Expandable title="Code object properties">
+    <ResponseField name="id" type="number">
+      Auto-generated unique identifier.
+    </ResponseField>
+    <ResponseField name="username" type="string">
+      Username of the snippet owner.
+    </ResponseField>
+    <ResponseField name="code" type="string">
+      The actual code content.
+    </ResponseField>
+    <ResponseField name="type" type="string">
+      Language or type label (e.g., `"JavaScript"`, `"Python"`).
+    </ResponseField>
+    <ResponseField name="title" type="string">
+      Snippet title.
+    </ResponseField>
+    <ResponseField name="description" type="string">
+      Description of the snippet.
+    </ResponseField>
+    <ResponseField name="visibility" type="boolean">
+      Always `true` for snippets returned by this endpoint.
+    </ResponseField>
+    <ResponseField name="createdAt" type="string">
+      ISO 8601 datetime string indicating when the snippet was created.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Examples
+
+### Fetch 10 random public snippets (default)
+
+```bash
+curl http://localhost:8080/api/
+```
+
+### Fetch 5 random public snippets
+
+```bash
+curl "http://localhost:8080/api/?size=5"
+```
+
+### Example response
+
+```json
+[
+  {
+    "id": 42,
+    "username": "alice",
+    "code": "console.log('Hello, world!');",
+    "type": "JavaScript",
+    "title": "Hello World",
+    "description": "Classic introductory snippet.",
+    "visibility": true,
+    "createdAt": "2024-11-01T09:15:00"
+  },
+  {
+    "id": 17,
+    "username": "bob",
+    "code": "print('Hello, world!')",
+    "type": "Python",
+    "title": "Python Hello World",
+    "description": "Simple Python example.",
+    "visibility": true,
+    "createdAt": "2024-10-22T14:30:00"
+  }
+]
+```

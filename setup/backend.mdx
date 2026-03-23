@@ -1,0 +1,168 @@
+---
+title: "Backend setup"
+description: "Set up and run the Spring Boot backend for CodesEverywhere."
+keywords: ["spring boot", "java", "maven", "backend", "setup"]
+---
+
+## Prerequisites
+
+Before you begin, make sure you have the following installed:
+
+- **Java 17 or later** — the backend targets Java 17 (`java.version = 17` in `pom.xml`)
+- **Maven** — or use the included `mvnw` wrapper (no separate install needed)
+- **MySQL 8** — see the [Database setup](/setup/database) guide
+
+## Setup steps
+
+<Steps>
+  <Step title="Clone the repository">
+    ```bash
+    git clone https://github.com/ANGELKORADIYA/codes-every-where.git
+    cd codes-every-where
+    ```
+  </Step>
+
+  <Step title="Configure application.properties">
+    Open `src/main/resources/application.properties` and verify or update the following configuration:
+
+    ```properties
+    spring.application.name=codeseverywhere
+
+    # MySQL datasource
+    spring.sql.init.platform=mysql
+    spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+    spring.datasource.url=jdbc:mysql://localhost:3306/29db
+    spring.datasource.username=root
+    spring.datasource.password=root
+
+    # JPA / Hibernate
+    spring.jpa.hibernate.ddl-auto=update
+    spring.jpa.show-sql=true
+    ```
+
+    | Property | Description |
+    |---|---|
+    | `spring.datasource.url` | JDBC URL pointing to your local MySQL instance and the `29db` database |
+    | `spring.datasource.username` | MySQL user — defaults to `root` |
+    | `spring.datasource.password` | MySQL password — defaults to `root` |
+    | `spring.jpa.hibernate.ddl-auto=update` | Hibernate automatically creates or updates tables on startup; no manual schema migrations needed |
+    | `spring.jpa.show-sql=true` | Logs every SQL statement to stdout — useful during development |
+
+    <Warning>
+      The default credentials are `root`/`root`. Never use these in a production environment. Set a strong, unique password and restrict the MySQL user's privileges to the `29db` database only.
+    </Warning>
+  </Step>
+
+  <Step title="Build the project">
+    Use the Maven wrapper included in the repository to compile and package the application:
+
+    <CodeGroup>
+      ```bash Maven wrapper (recommended)
+      ./mvnw clean install
+      ```
+
+      ```bash System Maven
+      mvn clean install
+      ```
+    </CodeGroup>
+
+    This downloads all dependencies declared in `pom.xml` (Spring Boot 3.4.1, `spring-boot-starter-web`, `spring-boot-starter-data-jpa`, `mysql-connector-java 8.0.31`, and others) and produces a runnable JAR in `target/`.
+  </Step>
+
+  <Step title="Start the server">
+    <CodeGroup>
+      ```bash Maven wrapper
+      ./mvnw spring-boot:run
+      ```
+
+      ```bash Run the packaged JAR
+      java -jar target/codeseverywhere-*.jar
+      ```
+    </CodeGroup>
+
+    The server starts on **port 8080**. You should see output similar to:
+
+    ```
+    Started CodeseverywhereApplication in 3.2 seconds (process running for 3.6)
+    ```
+
+    Verify it is running:
+
+    ```bash
+    curl http://localhost:8080/api/codes
+    ```
+  </Step>
+</Steps>
+
+## CORS configuration
+
+The REST controller uses Spring's `@CrossOrigin` annotation with no restrictions, which allows requests from any origin:
+
+```java
+@CrossOrigin
+@RestController
+@RequestMapping("/api")
+public class CodesController { ... }
+```
+
+This is fine for local development. For production, replace the bare `@CrossOrigin` annotation with an explicit origin list:
+
+```java
+@CrossOrigin(origins = "https://your-frontend-domain.com")
+```
+
+## JPA and schema management
+
+`spring.jpa.hibernate.ddl-auto=update` means Hibernate inspects the database on startup and applies only the changes needed to bring the schema in line with your entity classes. It will create tables that do not exist yet and add missing columns, but it will **not** drop existing columns or tables.
+
+<Note>
+  Hibernate's `update` mode is convenient during development but is not a replacement for a proper migration tool (such as Flyway or Liquibase) in production. It does not handle column renames or type changes safely.
+</Note>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Communications link failure / Unable to connect to MySQL">
+    The server cannot reach MySQL. Check that:
+
+    - MySQL is running: `mysqladmin -u root -p status`
+    - The port is correct (default `3306`)
+    - The `29db` database exists: `SHOW DATABASES;`
+    - Your firewall is not blocking port 3306
+  </Accordion>
+
+  <Accordion title="Access denied for user 'root'@'localhost'">
+    The credentials in `application.properties` do not match what MySQL expects. Verify the password:
+
+    ```bash
+    mysql -u root -p
+    ```
+
+    If you need to reset the password:
+
+    ```sql
+    ALTER USER 'root'@'localhost' IDENTIFIED BY 'your-new-password';
+    FLUSH PRIVILEGES;
+    ```
+
+    Then update `spring.datasource.password` to match.
+  </Accordion>
+
+  <Accordion title="Unknown database '29db'">
+    The database has not been created yet. Follow the [Database setup](/setup/database) guide and run:
+
+    ```sql
+    CREATE DATABASE 29db;
+    ```
+  </Accordion>
+
+  <Accordion title="Port 8080 is already in use">
+    Another process is listening on port 8080. Either stop that process or run the backend on a different port:
+
+    ```properties
+    server.port=8081
+    ```
+
+    Remember to update the frontend's base URL if you change the port.
+  </Accordion>
+</AccordionGroup>

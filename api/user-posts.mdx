@@ -1,0 +1,126 @@
+---
+title: 'Get user snippets'
+description: 'Retrieve all code snippets belonging to a user, including private ones. Authentication required.'
+keywords: ['post', 'user', 'snippets', 'private', 'authentication']
+api: 'POST http://localhost:8080/api/user-posts'
+---
+
+Returns all code snippets that belong to the authenticated user, including private snippets. Credentials are passed in the request body.
+
+## Request body
+
+<ParamField body="username" type="string" required>
+  Your username or email. If this account does not exist yet, it will be created automatically and an empty array is returned.
+</ParamField>
+
+<ParamField body="password" type="string" required>
+  Your password.
+</ParamField>
+
+<Note>
+This endpoint uses the same automatic account-creation behaviour as the other authenticated endpoints. Submitting a username that does not exist will create that account (with no snippets) rather than returning a `401`.
+</Note>
+
+## Response
+
+### 200 OK — success
+
+Returns an array of [Code objects](/api/models#code-object) for the authenticated user. Both public (`visibility: true`) and private (`visibility: false`) snippets are included.
+
+<ResponseField name="[]" type="Code[]">
+  All snippets owned by the user.
+
+  <Expandable title="Code object properties">
+    <ResponseField name="id" type="number">
+      Auto-generated unique identifier.
+    </ResponseField>
+    <ResponseField name="username" type="string">
+      Username of the snippet owner.
+    </ResponseField>
+    <ResponseField name="code" type="string">
+      The actual code content.
+    </ResponseField>
+    <ResponseField name="type" type="string">
+      Language or type label (e.g., `"JavaScript"`, `"Python"`).
+    </ResponseField>
+    <ResponseField name="title" type="string">
+      Snippet title.
+    </ResponseField>
+    <ResponseField name="description" type="string">
+      Description of the snippet.
+    </ResponseField>
+    <ResponseField name="visibility" type="boolean">
+      `true` for public snippets, `false` for private.
+    </ResponseField>
+    <ResponseField name="createdAt" type="string">
+      ISO 8601 datetime string indicating when the snippet was created.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### 401 Unauthorized — authentication failed
+
+Returns an empty array when credentials are incorrect for an existing account.
+
+```json
+[]
+```
+
+<Warning>
+The `401` response body is an empty array rather than an error object. Check the HTTP status code to distinguish an auth failure from a user who simply has no snippets (which also returns an empty array with `200`).
+</Warning>
+
+## Examples
+
+### Fetch all snippets for a user
+
+```bash
+curl -X POST http://localhost:8080/api/user-posts \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "alice",
+    "password": "hunter2"
+  }'
+```
+
+### Example request body
+
+```json
+{
+  "username": "alice",
+  "password": "hunter2"
+}
+```
+
+### Success response (200)
+
+```json
+[
+  {
+    "id": 42,
+    "username": "alice",
+    "code": "console.log('Hello, world!');",
+    "type": "JavaScript",
+    "title": "Hello World",
+    "description": "Classic introductory snippet.",
+    "visibility": true,
+    "createdAt": "2024-11-01T09:15:00"
+  },
+  {
+    "id": 55,
+    "username": "alice",
+    "code": "SELECT * FROM users;",
+    "type": "SQL",
+    "title": "Select all users",
+    "description": "Private database query.",
+    "visibility": false,
+    "createdAt": "2024-11-05T17:42:00"
+  }
+]
+```
+
+### Auth failure response (401)
+
+```json
+[]
+```

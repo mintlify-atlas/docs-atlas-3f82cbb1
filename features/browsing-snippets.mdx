@@ -1,0 +1,64 @@
+---
+title: "Browsing snippets"
+description: "Explore the public snippet feed on the CodesEverywhere dashboard — an infinite-scroll experience showing code shared by the community."
+keywords: ["browse", "dashboard", "snippets", "feed", "infinite scroll"]
+---
+
+The dashboard is the main landing page of CodesEverywhere. It displays a continuously loading feed of publicly shared code snippets from all users, in a randomized order.
+
+## How the dashboard works
+
+When you open CodesEverywhere at `/`, the dashboard fetches snippets from the API and renders them as cards in a responsive grid. As you scroll toward the bottom of the page, an `IntersectionObserver` automatically triggers the next batch of snippets to load — no manual interaction required in most cases.
+
+<Note>
+  Only **public** snippets appear in the dashboard feed. Snippets shared with **private** visibility are hidden from this page and are only visible to their author via the [User Posts](/features/user-posts) page.
+</Note>
+
+### Ordering
+
+Snippets are returned in **random order** by the backend on each request. This ensures that the feed stays fresh and gives all snippets equal discovery opportunity, regardless of when they were posted.
+
+## What each snippet card shows
+
+Every card in the feed displays the following fields:
+
+<Columns cols={2}>
+  <Card title="Author" icon="user">
+    The username of the person who shared the snippet.
+  </Card>
+  <Card title="Timestamp" icon="clock">
+    When the snippet was uploaded, formatted as `DD-MM-YYYY HH:MM`.
+  </Card>
+  <Card title="Title" icon="heading">
+    The title given to the snippet by the author.
+  </Card>
+  <Card title="Type badge" icon="tag">
+    A label showing the language or category (e.g., `Python`, `SQL`, `Bash`).
+  </Card>
+  <Card title="Description" icon="align-left">
+    A short explanation of what the snippet does.
+  </Card>
+  <Card title="Code block" icon="code">
+    The full code content, rendered in a monospace `pre/code` block for readability.
+  </Card>
+</Columns>
+
+## Loading behavior
+
+The dashboard manages loading state with a visual spinner while a request is in flight. Duplicate snippets are filtered out client-side by `post.id` to prevent the same snippet from appearing twice as pages overlap.
+
+### When all snippets have loaded
+
+Once the API has no more snippets to return, the infinite scroll stops and a **Load More** button appears at the bottom of the feed. This button is the only action that signals the feed is exhausted — there is no separate "end of feed" message.
+
+<Tip>
+  If you see the **Load More** button, you've reached the end of the current public snippet database. Check back later as more users share code.
+</Tip>
+
+## Tips for discovering code
+
+- **Scroll continuously** — the feed loads new batches automatically; you rarely need to click anything.
+- **Check the type badge** — use the language label on each card to quickly identify relevant snippets without reading the full code block.
+- **Read descriptions** — authors can add a description to explain what their snippet does and when to use it; these are shown directly on the card.
+- **Reload for variety** — because snippets are served in random order, refreshing the page surfaces a different selection from the same pool.
+- **Share your own** — to contribute to the feed, see [Sharing code](/features/sharing-code).

@@ -1,0 +1,168 @@
+---
+title: 'Data models'
+description: 'Reference for all request and response objects used by the CodesEverywhere API.'
+keywords: ['models', 'schema', 'code', 'login', 'detailedcode', 'types']
+---
+
+This page documents every object shape used across the CodesEverywhere API endpoints.
+
+## Code object
+
+Represents a saved code snippet. Returned by [GET /api/](/api/get-codes) and [POST /api/user-posts](/api/user-posts).
+
+<ResponseField name="id" type="number" required>
+  Auto-generated unique identifier for the snippet.
+</ResponseField>
+
+<ResponseField name="username" type="string" required>
+  Username of the account that owns this snippet.
+</ResponseField>
+
+<ResponseField name="code" type="string" required>
+  The full code content of the snippet.
+</ResponseField>
+
+<ResponseField name="type" type="string" required>
+  Language or type label for the snippet (e.g., `"JavaScript"`, `"Python"`, `"SQL"`).
+</ResponseField>
+
+<ResponseField name="title" type="string" required>
+  Human-readable title for the snippet.
+</ResponseField>
+
+<ResponseField name="description" type="string" required>
+  A short description of what the snippet does.
+</ResponseField>
+
+<ResponseField name="visibility" type="boolean" required>
+  `true` if the snippet is publicly visible; `false` if it is private. Only public snippets appear in `GET /api/` results.
+</ResponseField>
+
+<ResponseField name="createdAt" type="string" required>
+  ISO 8601 datetime string indicating when the snippet was saved (e.g., `"2024-11-01T09:15:00"`).
+</ResponseField>
+
+### Example
+
+```json
+{
+  "id": 42,
+  "username": "alice",
+  "code": "console.log('Hello, world!');",
+  "type": "JavaScript",
+  "title": "Hello World",
+  "description": "Classic introductory snippet.",
+  "visibility": true,
+  "createdAt": "2024-11-01T09:15:00"
+}
+```
+
+---
+
+## Login object
+
+Credentials passed in the request body for authenticated endpoints. Used directly as the request body for [POST /api/user-posts](/api/user-posts), and nested under the `login` key for [POST /api/upload](/api/upload-code).
+
+<ParamField body="username" type="string" required>
+  The account username or email address. If no account with this username exists, one is created automatically.
+</ParamField>
+
+<ParamField body="password" type="string" required>
+  The account password. Must match the stored password for existing accounts.
+</ParamField>
+
+<Note>
+There is no separate registration flow. Submitting credentials for a non-existent username automatically creates a new account.
+</Note>
+
+### Example
+
+```json
+{
+  "username": "alice",
+  "password": "hunter2"
+}
+```
+
+---
+
+## DetailedCode object
+
+Request body for [POST /api/upload](/api/upload-code). Combines a snippet payload with authentication credentials.
+
+<ParamField body="codes" type="object" required>
+  The snippet to save.
+
+  <Expandable title="codes properties">
+    <ParamField body="codes.username" type="string">
+      Owner's username. Optional — if omitted, the backend sets this automatically from `login.username`.
+    </ParamField>
+    <ParamField body="codes.code" type="string" required>
+      The full code content.
+    </ParamField>
+    <ParamField body="codes.type" type="string" required>
+      Language or type label.
+    </ParamField>
+    <ParamField body="codes.title" type="string" required>
+      Snippet title.
+    </ParamField>
+    <ParamField body="codes.description" type="string" required>
+      Snippet description.
+    </ParamField>
+    <ParamField body="codes.visibility" type="boolean" required>
+      `true` to make the snippet public, `false` to keep it private.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="login" type="object" required>
+  Authentication credentials.
+
+  <Expandable title="login properties">
+    <ParamField body="login.username" type="string" required>
+      Username or email.
+    </ParamField>
+    <ParamField body="login.password" type="string" required>
+      Password.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+### Example
+
+```json
+{
+  "codes": {
+    "username": "alice",
+    "code": "console.log('Hello, world!');",
+    "type": "JavaScript",
+    "title": "Hello World",
+    "description": "Classic introductory snippet.",
+    "visibility": true
+  },
+  "login": {
+    "username": "alice",
+    "password": "hunter2"
+  }
+}
+```
+
+---
+
+## Okk response object
+
+Returned by [POST /api/upload](/api/upload-code) to indicate success or failure.
+
+<ResponseField name="okk" type="boolean" required>
+  `true` when the snippet was saved successfully (`201 Created`). `false` when authentication failed (`401 Unauthorized`).
+</ResponseField>
+
+### Examples
+
+```json title="Success (201)"
+{ "okk": true }
+```
+
+```json title="Auth failure (401)"
+{ "okk": false }
+```
